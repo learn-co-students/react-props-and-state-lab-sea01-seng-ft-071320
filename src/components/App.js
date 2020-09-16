@@ -1,19 +1,54 @@
-import React from 'react'
+import React from "react";
 
-import Filters from './Filters'
-import PetBrowser from './PetBrowser'
+import Filters from "./Filters";
+import PetBrowser from "./PetBrowser";
 
 class App extends React.Component {
   constructor() {
-    super()
+    super();
 
     this.state = {
       pets: [],
       filters: {
-        type: 'all'
-      }
-    }
+        type: "all",
+      },
+    };
   }
+
+  // onFindPetsClick() = {
+  // /api/pets
+  //  }
+
+  onChangeType = (event) => {
+    this.setState({ filters: { type: event.target.value } });
+  };
+
+  onFindPetsClick = () => {
+    let url = `/api/pets`;
+    if (this.state.filters.type === "all") {
+      fetch(url)
+        .then((response) => response.json())
+        .then((animals) => this.setState({ pets: animals }));
+    } else {
+      fetch(`${url}?type=${this.state.filters.type}`)
+        .then((response) => response.json())
+        .then((animals) => this.setState({ pets: animals }));
+    }
+  };
+
+  onAdoptPet = (id) => {
+    console.log(id);
+
+    let a = this.state.pets.filter((pet) => pet.id === id);
+    console.log(a);
+    // a.setState({ pet });
+    a[0].isAdopted = true;
+    this.setState({ ...this.state.pets, a });
+
+    // this.state.pets.map(pet =>
+    //   if (pet.id === id)
+    //   a[0]isAdopted = )
+  };
 
   render() {
     return (
@@ -24,16 +59,19 @@ class App extends React.Component {
         <div className="ui container">
           <div className="ui grid">
             <div className="four wide column">
-              <Filters />
+              <Filters
+                onChangeType={this.onChangeType}
+                onFindPetsClick={this.onFindPetsClick}
+              />
             </div>
             <div className="twelve wide column">
-              <PetBrowser />
+              <PetBrowser pets={this.state.pets} onAdoptPet={this.onAdoptPet} />
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default App
+export default App;
